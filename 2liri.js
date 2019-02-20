@@ -14,10 +14,10 @@ var entry = process.argv.slice(3).join(" ");
 //Run LIRI 
 function run(){
     CFonts.say('---LIRI---', {
-        font: 'console',           // define the font face
-        colors: ['white'],         // define all colors
+        font: 'console',    // define the font face
+        colors: ['white'],  // define all colors
     });
-    if(!process.argv[2]){       //if no input run inquire q's
+    if(!process.argv[2]){  //if no input run inquire q's
         inquire()
     }
     switch (process.argv[2]) {
@@ -43,31 +43,27 @@ function run(){
 //bandsintown functionality --- not working 
 function concert(){
     CFonts.say('LIRI \n BANDSINTOWN!', {
-        font: 'block',              // define the font face
-        colors: ['#00B4B3', 'white'],         // define all colors
+        font: 'block',    // define the font face
+        colors: ['#00B4B3', 'white'], // define all colors
     });
     if(!entry){
         entry="band";
         CFonts.say('you did not pick a band', {
-            font: 'chrome',     // define the font face
+            font: 'chrome',  // define the font face
             colors: ['white'],  // define all colors
         });
     }
     var queryUrl = "https://rest.bandsintown.com/artists/"+entry+"/events?app_id=codingbootcamp"
     axios.get(queryUrl).then(function(response){
     var concert = response.data 
-    //console.log(concert)
-    $i=0;
+    console.log("(There may be no upcoming shows for your band if no results shown, try a different band)\n")
     concert.forEach(event =>  {
-        if(!response){
-            console.log("There are no upcoming shows")
-        }
         var data = "Event: "+event.venue.name+"\nLocation: "+event.venue.city+", "+event.venue.country+".\nTo be held on: "+moment(event.datetime).format("LLLL")+"\n---------------------";
         console.log("--- "+now.format("LLLL")+"\nWELCOME TO BANDSINTOWN! YOUR PLACE FOR EVERY CONCERT IN YOUR TOWN!")
         console.log(data)
-        /* fs.appendFile("log.txt", "\n"+now.format("LLLL")+"\nBANDSINTOWN"+"\n"+data, function(err){ 
+        fs.appendFile("log.txt", "\n"+now.format("LLLL")+"\nBANDSINTOWN"+"\n"+data, function(err){ 
             if (err){console.log(err)}
-          }) */
+          })
     }) 
     });
 }; 
@@ -75,8 +71,8 @@ function concert(){
 // SPOTIFY search
 function spotifyThis(){
     CFonts.say('LIRI \n SPOTIFY!', {
-        font: 'block',   // define the font face
-        colors: ['#1ED760', '#F8C444'],  // define all colors
+        font: 'block', // define the font face
+        colors: ['#1ED760', '#F8C444'], // define all colors
     });
     if(!entry){
         entry = "The Sign by Ace of Base"
@@ -98,8 +94,8 @@ function spotifyThis(){
 //OMDB search
 function movie(){
     CFonts.say('LIRI \n OMDB!', {
-        font: 'block',              // define the font face
-        colors: ['red', 'white'],         // define all colors
+        font: 'block',  // define the font face
+        colors: ['red', 'white'], // define all colors
     });
     if(!entry){
         entry ="kill+bill";
@@ -139,8 +135,8 @@ function doWhatItSays(){
 //Questions to ask user
 function inquire(){
     CFonts.say("hello, i'm liri", {
-        font: 'simple',    // define the font face
-        colors: ['white'],         // define colors
+        font: 'simple',   // define the font face
+        colors: ['white'],   // define colors
     });
     inquirer.prompt([
         {
@@ -149,27 +145,41 @@ function inquire(){
             choices: ["concert-this", "spotify-this-song", "movie-this", "do-what-it-says"],
             name: "function"
         },
-        {
-            type: "input",
-            message: "Please give me the name of the band / song / movie you would like me to look up:",
-            name: "entry"
-        },
-        {
-            type: "confirm",
-            message: "Are you sure?",
-            name: "confirm",
-            default: true
-        }
+        
     ])
     .then(function(inquirerResponse) {
-        if (inquirerResponse.confirm) {
+        if(inquirerResponse.function !== "do-what-it-says"){
             process.argv[2]=inquirerResponse.function;
-            entry=inquirerResponse.entry;
-            console.log("Please wait one moment...");
-            run()
+            inquirer.prompt([
+                {
+                    type: "input",
+                    message: "Please give me the name of the band / song / movie you would like me to look up:",
+                    name: "entry"
+                },
+                {
+                    type: "confirm",
+                    message: "Are you sure?",
+                    name: "confirm",
+                    default: true
+                }
+            ])
+            .then(function(inquirerResponse) {
+                if (inquirerResponse.confirm) {
+        
+                    entry=inquirerResponse.entry;
+                    console.log("Please wait one moment...");
+                    run()
+                }
+                else{
+                    console.log("I will be here waiting...")
+                }
+            });
         }
         else{
-            console.log("I will be here waiting...")
+            process.argv[2]=inquirerResponse.function;
+                    entry=inquirerResponse.entry;
+                    console.log("Please wait one moment...");
+                    run()
         }
     });
 };
