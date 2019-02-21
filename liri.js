@@ -57,9 +57,9 @@ function concert(){
     axios.get(queryUrl).then(function(response){
     var concert = response.data 
     console.log("(There may be no upcoming shows for your band if no results shown, try a different band)\n")
+    console.log("--- "+now.format("LLLL")+"\nWELCOME TO BANDSINTOWN! YOUR PLACE FOR EVERY CONCERT IN YOUR TOWN!\n---------------------")
     concert.forEach(event =>  {
-        var data = "Event: "+event.venue.name+"\nLocation: "+event.venue.city+", "+event.venue.country+".\nTo be held on: "+moment(event.datetime).format("LLLL")+"\n---------------------";
-        console.log("--- "+now.format("LLLL")+"\nWELCOME TO BANDSINTOWN! YOUR PLACE FOR EVERY CONCERT IN YOUR TOWN!")
+        var data = "Event Venue: "+event.venue.name+"\nLocation: "+event.venue.city+", "+event.venue.country+".\nTo be held on: "+moment(event.datetime).format("LLLL")+"\n---------------------";
         console.log(data)
         fs.appendFile("log.txt", "\n"+now.format("LLLL")+"\nBANDSINTOWN"+"\n"+data, function(err){ 
             if (err){console.log(err)}
